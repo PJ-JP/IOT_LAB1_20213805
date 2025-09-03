@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,15 +25,19 @@ import java.util.HashMap;
 
 public class QuizRedesActivity extends AppCompatActivity {
 
+    private boolean flagHint = true;
     private int count = 0;
     private int puntaje = 0;
+    private int pistaCount = 0;
     private ArrayList<String> llaves;
     private HashMap<String, String> preguntas;
     private HashMap<String, String> solucion;
     private ArrayList<String> respuestas1, respuestas2, respuestas3, respuestas4, respuestas5, respuestas6, respuestas7;
-    private Button buttonView1, buttonView2, buttonView3, buttonView4;
+    private Button buttonView1, buttonView2, buttonView3, buttonView4, buttonView5, buttonView6 , buttonViewHint;
     private TextView textViewPregunta;
+    private String userInput;
 
+    private int rachaPositiva=0,rachaNegativa=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +52,7 @@ public class QuizRedesActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Up navigation Muestra el botón de regreso (flecha)
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_back_24dp); //seteo ícono de flecha atrás
         }
+        userInput = getIntent().getStringExtra("Nombre");
 
         llaves = new ArrayList<String>();
         llaves.add("Pregunta 1");
@@ -117,6 +123,9 @@ public class QuizRedesActivity extends AppCompatActivity {
         buttonView2 = findViewById(R.id.button7);
         buttonView3 = findViewById(R.id.button8);
         buttonView4 = findViewById(R.id.button9);
+        buttonView5 = findViewById(R.id.button10);
+        buttonView6 = findViewById(R.id.button11);
+        buttonViewHint = findViewById(R.id.button5);
         textViewPregunta = findViewById(R.id.textView6);
 
         cargarSiguientePregunta();
@@ -190,7 +199,21 @@ public class QuizRedesActivity extends AppCompatActivity {
         if (count < llaves.size()) {
             String preguntaActualKey = llaves.get(count);
             textViewPregunta.setText((count + 1) + ". " + preguntas.get(preguntaActualKey));
-
+            buttonView1.setEnabled(true);
+            buttonView2.setEnabled(true);
+            buttonView3.setEnabled(true);
+            buttonView4.setEnabled(true);
+            buttonView5.setEnabled(true);
+            buttonView6.setEnabled(true);
+            if(flagHint){
+                buttonViewHint.setEnabled(true);
+            }
+            if(count == 0){
+                buttonView5.setEnabled(false);
+            }
+            if(count == 6){
+                buttonView6.setEnabled(false);
+            }
             ArrayList<String> respuestasActuales = null;
             switch (preguntaActualKey) {
                 case "Pregunta 1": respuestasActuales = respuestas1; break;
@@ -211,12 +234,29 @@ public class QuizRedesActivity extends AppCompatActivity {
             }
         } else {
             // Quiz terminado
-            textViewPregunta.setText("Quiz Terminado! Puntaje: " + puntaje + "/" + llaves.size());
+            textViewPregunta.setText("Quiz Terminado! Puntaje: " + puntaje);
+            if(puntaje<0){
+                textViewPregunta.setBackgroundColor(Color.parseColor("#FF0000"));
+            }
+            else{
+                textViewPregunta.setBackgroundColor(Color.parseColor("#BDECB6"));
+            }
             buttonView1.setVisibility(View.GONE);
             buttonView2.setVisibility(View.GONE);
             buttonView3.setVisibility(View.GONE);
             buttonView4.setVisibility(View.GONE);
-            // Aquí podrías, por ejemplo, navegar a una pantalla de resultados.
+            buttonView5.setVisibility(View.GONE);
+            buttonView6.setEnabled(true);
+            buttonView6.setText("Volver a Inicio");
+            buttonView6.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(QuizRedesActivity.this, QuizSelectionActivity.class);
+                    intent.putExtra("Nombre", userInput);
+                    startActivity(intent);
+                }
+            });
+            buttonViewHint.setVisibility(View.GONE);
         }
     }
 
@@ -231,8 +271,9 @@ public class QuizRedesActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) { // Maneja el clic en el botón de navegación (flecha atrás)
             // Regresar a MainActivity
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, QuizSelectionActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("Nombre", getIntent().getStringExtra("Nombre"));
             startActivity(intent);
             finish(); // Finaliza QuizSelectionActivity
             return true;
@@ -251,9 +292,51 @@ public class QuizRedesActivity extends AppCompatActivity {
         // Podrías implementar una lógica para dar una pista, por ejemplo, deshabilitar una opción incorrecta.
         // O mostrar un Toast con la pista.
         if (count < llaves.size()) {
-            String preguntaActualKey = llaves.get(count); // Obtiene la llave de la pregunta actual
-            String pista = "Pista para: " + preguntaActualKey; // Lógica para obtener la pista real
-            Toast.makeText(this, pista, Toast.LENGTH_LONG).show();
+            if (pistaCount < 3) {
+                String pista = "Pista: " + (pistaCount+1);
+                Toast.makeText(this, pista, Toast.LENGTH_LONG).show();
+                ArrayList<Integer>  enteros =  new ArrayList<>();
+                enteros.add(0);
+                enteros.add(1);
+                enteros.add(2);
+                enteros.add(3);
+                Collections.shuffle(enteros);
+                int i;
+                for(i=0;i<2;i++){
+                    int indice = enteros.get(i);
+                    switch (indice){
+                        case 0:
+                            if(buttonView1.getText()!=solucion.get(llaves.get(count))){
+                                buttonView1.setEnabled(false);
+                                i=2;
+                            }
+                            break;
+                        case 1:
+                            if(buttonView2.getText()!=solucion.get(llaves.get(count))){
+                                buttonView2.setEnabled(false);
+                                i=2;
+                            }
+                            break;
+                        case 2:
+                            if(buttonView3.getText()!=solucion.get(llaves.get(count))){
+                                buttonView3.setEnabled(false);
+                                i=2;
+                            }
+                            break;
+                        case 3:
+                            if(buttonView4.getText()!=solucion.get(llaves.get(count))){
+                                buttonView4.setEnabled(false);
+                                i=2;
+                            }
+                            break;
+                    }
+                }
+                buttonViewHint.setEnabled(false);
+            }
+            pistaCount++;
+            if(pistaCount == 3){
+                flagHint = false;
+            }
         }
     }
 
@@ -272,16 +355,23 @@ public class QuizRedesActivity extends AppCompatActivity {
         Log.d("QuizRedesActivity", "Respuesta correcta: " + respuestaCorrecta);
 
         if(textoOpcionElegida.equals(respuestaCorrecta)){
-            puntaje++;
+            puntaje= (int) Math.pow(2,rachaPositiva+1)+puntaje;
+            rachaPositiva++;
+            rachaNegativa=0;
             Log.d("QuizRedesActivity", "¡Respuesta Correcta! Puntaje: " + puntaje);
             Toast.makeText(this, "¡Correcto!", Toast.LENGTH_SHORT).show();
         } else {
+            puntaje=puntaje+(-3) * (int) Math.pow(2,rachaNegativa);
+            rachaPositiva=0;
+            rachaNegativa++;
             Log.d("QuizRedesActivity", "Respuesta Incorrecta.");
             Toast.makeText(this, "Incorrecto. La respuesta era: " + respuestaCorrecta, Toast.LENGTH_LONG).show();
         }
-
+        TextView textViewPuntaje = findViewById(R.id.textView8);
+        textViewPuntaje.setText(String.valueOf(puntaje));
         count++; // Incrementar para la siguiente pregunta
         cargarSiguientePregunta(); // Cargar la siguiente pregunta o finalizar
+
     }
 
 }

@@ -45,7 +45,7 @@ public class QuizSelectionActivity extends AppCompatActivity {
         if (extras != null) {
             userInput = extras.getString("Nombre");
             if (userInput != null && !userInput.isEmpty()) {
-                textViewToShowInput.setText("Bienvenido, " + userInput);
+                textViewToShowInput.setText(userInput);
             } else {
                 textViewToShowInput.setText("Bienvenido, Anónimo");
             }
