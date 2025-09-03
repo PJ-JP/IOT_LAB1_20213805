@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_back_to_main"
+        android:title="Regresar"
+        android:icon="@drawable/arrow_back_24dp"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_open_other_activity"
+        android:title="Otra Activity"
+        android:icon="@drawable/arrow"
+        app:showAsAction="ifRoom" />
+
+</menu>
