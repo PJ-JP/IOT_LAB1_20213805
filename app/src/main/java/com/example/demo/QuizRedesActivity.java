@@ -1,0 +1,287 @@
+package com.example.demo;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
+public class QuizRedesActivity extends AppCompatActivity {
+
+    private int count = 0;
+    private int puntaje = 0;
+    private ArrayList<String> llaves;
+    private HashMap<String, String> preguntas;
+    private HashMap<String, String> solucion;
+    private ArrayList<String> respuestas1, respuestas2, respuestas3, respuestas4, respuestas5, respuestas6, respuestas7;
+    private Button buttonView1, buttonView2, buttonView3, buttonView4;
+    private TextView textViewPregunta;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_quiz_redes);
+
+        Toolbar toolbar = findViewById(R.id.toolbar_quiz_selection);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("TeleQuiz"); //título
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Up navigation Muestra el botón de regreso (flecha)
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_back_24dp); //seteo ícono de flecha atrás
+        }
+
+        llaves = new ArrayList<String>();
+        llaves.add("Pregunta 1");
+        llaves.add("Pregunta 2");
+        llaves.add("Pregunta 3");
+        llaves.add("Pregunta 4");
+        llaves.add("Pregunta 5");
+        llaves.add("Pregunta 6");
+        llaves.add("Pregunta 7");
+
+        Collections.shuffle(llaves);
+
+        preguntas = new HashMap<String, String>();
+        preguntas.put("Pregunta 1", "¿Qué capa del modelo OSI es responsable de la conversión de datos de un formato de red a un formato que la aplicación pueda entender?");
+        preguntas.put("Pregunta 2", "¿Cuál de los siguientes dispositivos de red opera en la Capa 2 (Capa de Enlace de Datos) del modelo OSI y utiliza direcciones MAC?");
+        preguntas.put("Pregunta 3", "¿Qué protocolo es conocido por ser orientado a la conexión y garantizar la entrega de datos de forma fiable?");
+        preguntas.put("Pregunta 4", "¿Cuál es el propósito principal de una dirección MAC?");
+        preguntas.put("Pregunta 5", "¿Qué tipo de red conecta dispositivos en un área geográfica extensa, como una ciudad, un país o incluso el mundo?");
+        preguntas.put("Pregunta 6", "En el contexto de redes, ¿qué es un ping?");
+        preguntas.put("Pregunta 7", "¿Qué capa del modelo de referencia TCP/IP combina las capas de Sesión, Presentación y Aplicación del modelo OSI?");
+
+        solucion = new HashMap<String, String>();
+        solucion.put("Pregunta 1", "Capa de Presentación");
+        solucion.put("Pregunta 2", "Switch");
+        solucion.put("Pregunta 3", "TCP (Transmission Control Protocol)");
+        solucion.put("Pregunta 4", "Identificar de forma única un dispositivo en una red local a nivel físico.");
+        solucion.put("Pregunta 5", "WAN (Wide Area Network)");
+        solucion.put("Pregunta 6", "Un comando utilizado para probar la conectividad y el tiempo de respuesta entre dos hosts.");
+        solucion.put("Pregunta 7", "Capa de Aplicación");
+
+        respuestas1 = new ArrayList<>();
+        respuestas1.add("Capa de Presentación");
+        respuestas1.add("Capa de Enlace de Datos");
+        respuestas1.add("Capa de Transporte");
+        respuestas1.add("Capa de Red");
+        respuestas2 = new ArrayList<>();
+        respuestas2.add("Firewall");
+        respuestas2.add("Switch");
+        respuestas2.add("Hub");
+        respuestas2.add("Router");
+        respuestas3 = new ArrayList<>();
+        respuestas3.add("IP (Internet Protocol)");
+        respuestas3.add("TCP (Transmission Control Protocol)");
+        respuestas3.add("UDP (User Datagram Protocol)");
+        respuestas3.add("ARP (Address Resolution Protocol)");
+        respuestas4 = new ArrayList<>();
+        respuestas4.add("Identificar una red en Internet.");
+        respuestas4.add("Identificar de forma única un dispositivo en una red local a nivel físico.");
+        respuestas4.add("Identificar de forma única un dispositivo en una red a nivel lógico.");
+        respuestas4.add("Identificar de forma única una aplicación o servicio en un host.");
+        respuestas5 = new ArrayList<>();
+        respuestas5.add("PAN (Personal Area Network)");
+        respuestas5.add("MAN (Metropolitan Area Network)");
+        respuestas5.add("WAN (Wide Area Network)");
+        respuestas5.add("LAN (Local Area Network)");
+        respuestas6 = new ArrayList<>();
+        respuestas6.add("Un tipo de cable de red utilizado para la conexión de larga distancia.");
+        respuestas6.add("Un protocolo utilizado para la transferencia de archivos en una red.");
+        respuestas6.add("Un comando utilizado para probar la conectividad y el tiempo de respuesta entre dos hosts.");
+        respuestas6.add("Un dispositivo de red que amplifica una señal débil.");
+        respuestas7 = new ArrayList<>();
+        respuestas7.add("Capa de Internet");
+        respuestas7.add("Capa de Transporte");
+        respuestas7.add("Capa de Acceso a la Red");
+        respuestas7.add("Capa de Aplicación");
+
+        buttonView1 = findViewById(R.id.button6);
+        buttonView2 = findViewById(R.id.button7);
+        buttonView3 = findViewById(R.id.button8);
+        buttonView4 = findViewById(R.id.button9);
+        textViewPregunta = findViewById(R.id.textView6);
+
+        cargarSiguientePregunta();
+
+        /*switch (llaves.get(count)) {
+            case "Pregunta 1":
+                Collections.shuffle(respuestas1);
+                buttonView1.setText(respuestas1.get(0));
+                buttonView2.setText(respuestas1.get(1));
+                buttonView3.setText(respuestas1.get(2));
+                buttonView4.setText(respuestas1.get(3));
+                textViewPregunta.setText(count+1+"."+preguntas.get("Pregunta 1"));
+                break;
+            case "Pregunta 2":
+                Collections.shuffle(respuestas2);
+                buttonView1.setText(respuestas2.get(0));
+                buttonView2.setText(respuestas2.get(1));
+                buttonView3.setText(respuestas2.get(2));
+                buttonView4.setText(respuestas2.get(3));
+                textViewPregunta.setText(preguntas.get("Pregunta 2"));
+                break;
+            case "Pregunta 3":
+                Collections.shuffle(respuestas3);
+                buttonView1.setText(respuestas3.get(0));
+                buttonView2.setText(respuestas3.get(1));
+                buttonView3.setText(respuestas3.get(2));
+                buttonView4.setText(respuestas3.get(3));
+                textViewPregunta.setText(preguntas.get("Pregunta 3"));
+                break;
+            case "Pregunta 4":
+                Collections.shuffle(respuestas4);
+                buttonView1.setText(respuestas4.get(0));
+                buttonView2.setText(respuestas4.get(1));
+                buttonView3.setText(respuestas4.get(2));
+                buttonView4.setText(respuestas4.get(3));
+                textViewPregunta.setText(preguntas.get("Pregunta 4"));
+                break;
+            case "Pregunta 5":
+                Collections.shuffle(respuestas5);
+                buttonView1.setText(respuestas5.get(0));
+                buttonView2.setText(respuestas5.get(1));
+                buttonView3.setText(respuestas5.get(2));
+                buttonView4.setText(respuestas5.get(3));
+                textViewPregunta.setText(preguntas.get("Pregunta 5"));
+                break;
+            case "Pregunta 6":
+                Collections.shuffle(respuestas6);
+                buttonView1.setText(respuestas6.get(0));
+                buttonView2.setText(respuestas6.get(1));
+                buttonView3.setText(respuestas6.get(2));
+                buttonView4.setText(respuestas6.get(3));
+                textViewPregunta.setText(preguntas.get("Pregunta 6"));
+                break;
+            case "Pregunta 7":
+                Collections.shuffle(respuestas7);
+                buttonView1.setText(respuestas7.get(0));
+                buttonView2.setText(respuestas7.get(1));
+                buttonView3.setText(respuestas7.get(2));
+                buttonView4.setText(respuestas7.get(3));
+                break;
+        }*/
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+
+    private void cargarSiguientePregunta() {
+        if (count < llaves.size()) {
+            String preguntaActualKey = llaves.get(count);
+            textViewPregunta.setText((count + 1) + ". " + preguntas.get(preguntaActualKey));
+
+            ArrayList<String> respuestasActuales = null;
+            switch (preguntaActualKey) {
+                case "Pregunta 1": respuestasActuales = respuestas1; break;
+                case "Pregunta 2": respuestasActuales = respuestas2; break;
+                case "Pregunta 3": respuestasActuales = respuestas3; break;
+                case "Pregunta 4": respuestasActuales = respuestas4; break;
+                case "Pregunta 5": respuestasActuales = respuestas5; break;
+                case "Pregunta 6": respuestasActuales = respuestas6; break;
+                case "Pregunta 7": respuestasActuales = respuestas7; break;
+            }
+
+            if (respuestasActuales != null) {
+                Collections.shuffle(respuestasActuales);
+                buttonView1.setText(respuestasActuales.get(0));
+                buttonView2.setText(respuestasActuales.get(1));
+                buttonView3.setText(respuestasActuales.get(2));
+                buttonView4.setText(respuestasActuales.get(3));
+            }
+        } else {
+            // Quiz terminado
+            textViewPregunta.setText("Quiz Terminado! Puntaje: " + puntaje + "/" + llaves.size());
+            buttonView1.setVisibility(View.GONE);
+            buttonView2.setVisibility(View.GONE);
+            buttonView3.setVisibility(View.GONE);
+            buttonView4.setVisibility(View.GONE);
+            // Aquí podrías, por ejemplo, navegar a una pantalla de resultados.
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.quiz_selection_menu, menu); // Infla el menú que ahora solo tiene action_open_other_activity
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) { // Maneja el clic en el botón de navegación (flecha atrás)
+            // Regresar a MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Finaliza QuizSelectionActivity
+            return true;
+        } else if (itemId == R.id.action_open_other_activity) {
+            // Abrir OtraActivity (reemplaza con el nombre de tu actividad)
+            // Intent intent = new Intent(this, OtraActivity.class);
+            // startActivity(intent);
+            Log.d("QuizSelectionMenu", "Abrir otra actividad presionado");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void hint(View view){
+        Log.d("QuizSelectionMenu", "Hint presionado");
+        // Podrías implementar una lógica para dar una pista, por ejemplo, deshabilitar una opción incorrecta.
+        // O mostrar un Toast con la pista.
+        if (count < llaves.size()) {
+            String preguntaActualKey = llaves.get(count); // Obtiene la llave de la pregunta actual
+            String pista = "Pista para: " + preguntaActualKey; // Lógica para obtener la pista real
+            Toast.makeText(this, pista, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void validate(View view){
+        if (count >= llaves.size()) { // Si el quiz ya terminó, no hacer nada más
+            return;
+        }
+
+        Button botonPresionado = (Button) view; // Cast de View a Button
+        String textoOpcionElegida = botonPresionado.getText().toString();
+
+        String preguntaActualKey = llaves.get(count); // Obtiene la llave de la pregunta que se acaba de responder
+        String respuestaCorrecta = solucion.get(preguntaActualKey);
+
+        Log.d("QuizRedesActivity", "Opción elegida: " + textoOpcionElegida);
+        Log.d("QuizRedesActivity", "Respuesta correcta: " + respuestaCorrecta);
+
+        if(textoOpcionElegida.equals(respuestaCorrecta)){
+            puntaje++;
+            Log.d("QuizRedesActivity", "¡Respuesta Correcta! Puntaje: " + puntaje);
+            Toast.makeText(this, "¡Correcto!", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d("QuizRedesActivity", "Respuesta Incorrecta.");
+            Toast.makeText(this, "Incorrecto. La respuesta era: " + respuestaCorrecta, Toast.LENGTH_LONG).show();
+        }
+
+        count++; // Incrementar para la siguiente pregunta
+        cargarSiguientePregunta(); // Cargar la siguiente pregunta o finalizar
+    }
+
+}
