@@ -95,13 +95,13 @@ public class QuizSelectionActivity extends AppCompatActivity {
     }
 
     public void abrirQuizCiberSeguridad(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, QuizRedesActivity.class);
         intent.putExtra("Nombre", userInput);
         intent.putExtra("Tema", "CiberSeguridad");
         startActivity(intent);
     }
     public void abrirQuizMicroondas(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, QuizRedesActivity.class);
         intent.putExtra("Nombre", userInput);
         intent.putExtra("Tema", "Microondas");
         startActivity(intent);
